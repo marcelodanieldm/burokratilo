@@ -1,9 +1,54 @@
+// Endpoint para reset password (simulado)
+app.post('/reset-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Falta el email' });
+  }
+  // Simula búsqueda de usuario y envío de email
+  const usuario = await Usuario.findOne({ username: email });
+  if (!usuario) {
+    return res.status(404).json({ error: 'Usuario no encontrado' });
+  }
+  // Aquí deberías enviar el email real con un token de recuperación
+  // Por ahora solo simula el proceso
+  res.json({ mensaje: 'Enlace de recuperación enviado a tu correo' });
+});
+// Ruta para registrar usuarios
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Faltan datos' });
+  }
+  try {
+    const existe = await Usuario.findOne({ username });
+    if (existe) {
+      return res.status(409).json({ error: 'El usuario ya existe' });
+    }
+    const nuevoUsuario = new Usuario({ username, password });
+    await nuevoUsuario.save();
+    res.status(201).json({ mensaje: 'Usuario registrado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error en el servidor', detalle: err.message });
+  }
+});
+
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// CORS y JSON deben ir antes de cualquier ruta
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+app.options('*', cors());
+app.use(express.json());
 
 const uri = process.env.MONGODB_URI;
 
@@ -13,6 +58,36 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 
 app.get('/', (req, res) => {
   res.send('Backend funcionando y conectado a MongoDB');
+});
+
+// Ruta y controlador de login
+const Usuario = require('./models/Usuario');
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Faltan datos' });
+  }
+  try {
+    const usuario = await Usuario.findOne({ username });
+    if (!usuario) {
+      return res.status(401).json({ error: 'Usuario no encontrado' });
+    }
+    const esValido = await usuario.comparePassword(password);
+    if (!esValido) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
+    // Determina el tipo de usuario (ejemplo: admin, user, guest)
+    let tipo = 'user';
+    if (usuario.username === 'admin@email.com') {
+      tipo = 'admin';
+    } else if (usuario.username.endsWith('@guest.com')) {
+      tipo = 'guest';
+    }
+    res.json({ mensaje: 'Login exitoso', tipo });
+  } catch (err) {
+    res.status(500).json({ error: 'Error en el servidor' });
+  }
 });
 
 app.listen(port, () => {
