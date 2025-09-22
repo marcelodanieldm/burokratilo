@@ -66,4 +66,16 @@ describe('Login endpoint', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.tipo).toBe('user');
   });
+
+  it('debe permitir login para otro solicitante', async () => {
+    const res = await request(app).post('/login').send({ username: 'sol2@burokratilo.com', password: '123456' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.tipo).toBe('solicitante');
+  });
+
+  it('debe permitir login para otro empleado', async () => {
+    const res = await request(app).post('/login').send({ username: 'emp4@burokratilo.com', password: '123456' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.tipo).toBe('empleado_n1');
+  });
 });
