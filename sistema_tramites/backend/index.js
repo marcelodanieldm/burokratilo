@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
+const authRoutes = require('./routes/auth.routes');
+app.use('/api/auth', authRoutes);
 // El puerto y app.listen se gestionan en server.js
 
 app.use(cors({

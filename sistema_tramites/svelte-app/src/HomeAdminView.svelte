@@ -6,10 +6,43 @@
   let showLogoutConfirm = false;
   let mensajeExito = '';
 
+  // Listas para los flujos
+  let flujosCreados = [];
+  let flujosDesarrollo = [];
+  let flujosProduccion = [];
+  let usuarios = [];
+
+  // URL del backend para flujos y usuarios
+  const API_URL_FLUJOS = 'http://localhost:3001/api/flujos';
+  const API_URL_USUARIOS = 'http://localhost:3001/api/usuarios';
+  async function fetchUsuarios() {
+    try {
+      const res = await fetch(API_URL_USUARIOS);
+      usuarios = await res.json();
+    } catch (err) {
+      console.error('Error al obtener usuarios:', err);
+    }
+  }
+
+  async function fetchFlujos() {
+    try {
+      const res = await fetch(API_URL_FLUJOS);
+      const flujos = await res.json();
+      flujosCreados = flujos.filter(f => f.estado === 'creado');
+      flujosDesarrollo = flujos.filter(f => f.estado === 'desarrollo');
+      flujosProduccion = flujos.filter(f => f.estado === 'produccion');
+    } catch (err) {
+      console.error('Error al obtener flujos:', err);
+    }
+  }
+
   onMount(() => {
     if (!userInfo || userInfo.rol !== 'admin') {
       notificacion = 'No tienes permiso para acceder a esta página.';
       setTimeout(() => push('/'), 2000);
+    } else {
+      fetchFlujos();
+      fetchUsuarios();
     }
   });
 
@@ -55,7 +88,7 @@
   .placeholder {
     color: #6b7280;
     font-size: 0.98rem;
-    margin-top: 8px;
+  
   }
   .btn-logout {
     background: linear-gradient(90deg, #ef4444 0%, #f59e42 100%);
@@ -78,34 +111,76 @@
   }
 </style>
 
+
 <div class="home-card" in:fade={{ duration: 400 }}>
   {#if notificacion}
     <div class="notif">{notificacion}</div>
   {:else}
     <h1 class="animated">¡Bienvenido, {userInfo.nombre}!</h1>
+      <div style="display:flex; gap:16px; justify-content:center; margin-bottom:18px;">
+        <button class="btn btn-crud" on:click={() => window.location.hash = '#/usuarios-crud'}>
+          <span style="margin-right:8px;">🧑‍💼</span> Gestión de Usuarios
+        </button>
+        <button class="btn btn-area" on:click={() => window.location.hash = '#/areas-crud'}>
+          <span style="margin-right:8px;">🏢</span> Gestión de Áreas/Subáreas
+        </button>
+      </div>
+
     <p>Hola {userInfo.nombre} {userInfo.apellido}! Eres tipo de usuario: <b>{userInfo.tipo}</b></p>
     {#if mensajeExito}
       <div class="exito">{mensajeExito}</div>
     {/if}
 
-    <div class="secciones-admin">
-      <div class="seccion">
-        <h2>Flujos de trámites creados</h2>
-        <div class="placeholder">(Aquí se mostrarán los flujos creados)</div>
+      <div class="secciones-admin">
+        <div class="seccion">
+          <h2>Flujos de trámites creados</h2>
+          {#if flujosCreados.length === 0}
+            <div class="placeholder">No hay flujos creados.</div>
+          {:else}
+            <ul>
+              {#each flujosCreados as flujo}
+                <li>{flujo.nombre}</li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
+        <div class="seccion">
+          <h2>Flujos de trámite en desarrollo</h2>
+          {#if flujosDesarrollo.length === 0}
+            <div class="placeholder">No hay flujos en desarrollo.</div>
+          {:else}
+            <ul>
+              {#each flujosDesarrollo as flujo}
+                <li>{flujo.nombre}</li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
+        <div class="seccion">
+          <h2>Flujos de trámite en producción</h2>
+          {#if flujosProduccion.length === 0}
+            <div class="placeholder">No hay flujos en producción.</div>
+          {:else}
+            <ul>
+              {#each flujosProduccion as flujo}
+                <li>{flujo.nombre}</li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
+        <div class="seccion">
+          <h2>Usuarios</h2>
+          {#if usuarios.length === 0}
+            <div class="placeholder">No hay usuarios registrados.</div>
+          {:else}
+            <ul>
+              {#each usuarios as usuario}
+                <li>{usuario.nombre} ({usuario.email}) - {usuario.rol}</li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
       </div>
-      <div class="seccion">
-        <h2>Flujos de trámite en desarrollo</h2>
-        <div class="placeholder">(Aquí se mostrarán los flujos en desarrollo)</div>
-      </div>
-      <div class="seccion">
-        <h2>Flujos de trámite en producción</h2>
-        <div class="placeholder">(Aquí se mostrarán los flujos en producción)</div>
-      </div>
-      <div class="seccion">
-        <h2>Usuarios</h2>
-        <div class="placeholder">(Aquí se mostrarán los usuarios)</div>
-      </div>
-    </div>
 
     <button class="btn btn-logout" on:click={handleLogout}>
       <span style="margin-right:8px;">🔒</span> Cerrar sesión

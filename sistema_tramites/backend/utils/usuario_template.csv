@@ -1,0 +1,3 @@
+nombre,email,password,rol,departamento,estado,permisos
+Juan Perez,juan@empresa.com,123456,empleado_n1,Recursos Humanos,activo,"aprobacion,edicion"
+Maria Gomez,maria@empresa.com,123456,admin,Finanzas,activo,"admin"

@@ -1,20 +1,23 @@
 <script>
+
   let email = '';
   let password = '';
   let showReset = false;
   let resetEmail = '';
+  let errorMsg = '';
 
   async function handleLogin() {
+    errorMsg = '';
     try {
-      const response = await fetch('/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password })
+        body: JSON.stringify({ email, password })
       });
       const data = await response.json();
       if (response.ok) {
+        data.tipo = data.rol;
         localStorage.setItem('userInfo', JSON.stringify(data));
-        // Redirige según el tipo de usuario
         if (data.tipo === 'admin') {
           window.location.hash = '#/home-admin';
         } else if (data.tipo === 'empleado_n1') {
@@ -31,16 +34,10 @@
           window.location.hash = '#/home-guest';
         }
       } else {
-        if (data.error === 'Usuario no encontrado') {
-          alert('Usuario no encontrado. Verifica el email.');
-        } else if (data.error === 'Contraseña incorrecta') {
-          alert('Contraseña incorrecta. Intenta de nuevo.');
-        } else {
-          alert(data.error || 'Credenciales incorrectas');
-        }
+        errorMsg = data.message || 'Credenciales incorrectas';
       }
     } catch (err) {
-      alert('Error en el servidor');
+      errorMsg = 'Error en el servidor';
     }
   }
 
@@ -107,8 +104,11 @@
 {#if !showReset}
   <div class="login-card">
     <h2>Iniciar sesión</h2>
-    <input class="input" type="email" placeholder="Email" bind:value={email} />
-    <input class="input" type="password" placeholder="Contraseña" bind:value={password} />
+    {#if errorMsg}
+      <div style="color:#ef4444; margin-bottom:10px;">{errorMsg}</div>
+    {/if}
+    <input class="input" type="email" placeholder="Email" bind:value={email} on:input={() => errorMsg = ''} />
+    <input class="input" type="password" placeholder="Contraseña" bind:value={password} on:input={() => errorMsg = ''} />
     <button class="btn" on:click={handleLogin}>Ingresar</button>
     <div>
       <span class="link" on:click={handleShowReset}>¿Olvidaste tu contraseña?</span>

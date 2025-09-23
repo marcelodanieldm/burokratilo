@@ -8,6 +8,8 @@ import HomeUserView from './HomeUserView.svelte';
 import HomeEmpleadoN1View from './HomeEmpleadoN1View.svelte';
 import HomeSolicitanteView from './HomeSolicitanteView.svelte';
 import HomeGuestView from './HomeGuestView.svelte';
+import UsuariosCrudView from './UsuariosCrudView.svelte';
+import AreasCrudView from './AreasCrudView.svelte';
 
 const routes = {
   '/': BienvenidaView,
@@ -17,7 +19,9 @@ const routes = {
   '/home-user': HomeUserView,
   '/home-empleado-n1': HomeEmpleadoN1View,
   '/home-solicitante': HomeSolicitanteView,
-  '/home-guest': HomeGuestView
+  '/home-guest': HomeGuestView,
+  '/usuarios-crud': UsuariosCrudView,
+  '/areas-crud': AreasCrudView
 };
 
 const app = new Router({

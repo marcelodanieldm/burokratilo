@@ -14,7 +14,7 @@
     formData.append('comentarios', comentarios);
     formData.append('archivo', archivo);
     try {
-      const response = await fetch('http://localhost:5000/api/tramites', {
+  const response = await fetch('http://localhost:3001/api/tramites', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${userInfo?.token || ''}`
