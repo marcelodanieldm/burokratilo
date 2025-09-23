@@ -6,7 +6,7 @@
 
   async function handleLogin() {
     try {
-  const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: email, password })
@@ -16,15 +16,19 @@
         localStorage.setItem('userInfo', JSON.stringify(data));
         // Redirige según el tipo de usuario
         if (data.tipo === 'admin') {
-          window.location.href = '/home-admin.html';
+          window.location.hash = '#/home-admin';
         } else if (data.tipo === 'empleado_n1') {
-          window.location.href = '/home-empleado-n1.html';
+          window.location.hash = '#/home-empleado-n1';
+        } else if (data.tipo === 'empleado_n2') {
+          window.location.hash = '#/home-empleado-n2';
+        } else if (data.tipo === 'empleado_n3') {
+          window.location.hash = '#/home-empleado-n3';
         } else if (data.tipo === 'solicitante') {
-          window.location.href = '/home-solicitante.html';
+          window.location.hash = '#/home-solicitante';
         } else if (data.tipo === 'user') {
-          window.location.href = '/home-user.html';
+          window.location.hash = '#/home-user';
         } else {
-          window.location.href = '/home-guest.html';
+          window.location.hash = '#/home-guest';
         }
       } else {
         if (data.error === 'Usuario no encontrado') {
@@ -46,7 +50,7 @@
 
   async function handleResetPassword() {
     try {
-      const response = await fetch('http://localhost:5000/reset-password', {
+      const response = await fetch('/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resetEmail })

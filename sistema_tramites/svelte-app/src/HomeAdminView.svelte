@@ -1,16 +1,13 @@
 <script>
   import { onMount } from 'svelte';
   import { push } from 'svelte-spa-router';
-  import IniciarTramiteView from './IniciarTramiteView.svelte';
-  import { fade } from 'svelte/transition';
   const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
-  let tipoPermitido = ['admin', 'user', 'empleado_n1', 'solicitante'];
   let notificacion = '';
   let showLogoutConfirm = false;
   let mensajeExito = '';
 
   onMount(() => {
-    if (!userInfo || !tipoPermitido.includes(userInfo.tipo)) {
+    if (!userInfo || userInfo.rol !== 'admin') {
       notificacion = 'No tienes permiso para acceder a esta página.';
       setTimeout(() => push('/'), 2000);
     }
@@ -26,73 +23,58 @@
   function cancelLogout() {
     showLogoutConfirm = false;
   }
-  function mostrarExito(msg) {
-    mensajeExito = msg;
-    setTimeout(() => mensajeExito = '', 2500);
-  }
 </script>
-
 <style>
   .home-card {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     padding: 32px 24px;
-    max-width: 400px;
+    max-width: 700px;
     margin: 40px auto;
     text-align: center;
   }
-  .btn {
-    background: #3b82f6;
+  .secciones-admin {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 32px 0;
+  }
+  .seccion {
+    background: #f3f4f6;
+    border-radius: 12px;
+    padding: 18px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    min-height: 120px;
+  }
+  .seccion h2 {
+    color: #3b82f6;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  .placeholder {
+    color: #6b7280;
+    font-size: 0.98rem;
+    margin-top: 8px;
+  }
+  .btn-logout {
+    background: linear-gradient(90deg, #ef4444 0%, #f59e42 100%);
     color: #fff;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.12);
     border: none;
     border-radius: 8px;
-    padding: 10px 24px;
+    padding: 10px 28px;
     font-weight: bold;
     cursor: pointer;
     margin-bottom: 10px;
-  }
-  .notif {
-    color: #ef4444;
-    margin-bottom: 16px;
-    font-weight: bold;
-  }
-  .exito {
-    color: #22c55e;
-    background: #f0fdf4;
-    border-radius: 8px;
-    padding: 8px 0;
-    margin-bottom: 16px;
-    font-weight: bold;
-    animation: fadeInDown 0.7s;
-  }
-  .animated {
-    animation: fadeInDown 0.7s;
-  }
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .modal-bg {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.2);
-    display: flex;
+    font-size: 1.05rem;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    z-index: 10;
+    transition: background 0.2s, box-shadow 0.2s;
   }
-  .modal {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-    padding: 24px 32px;
-    text-align: center;
-  }
-  .btn-cancel {
-    background: #e5e7eb;
-    color: #374151;
-    margin-left: 10px;
+  .btn-logout:hover {
+    background: linear-gradient(90deg, #f59e42 0%, #ef4444 100%);
+    box-shadow: 0 4px 16px rgba(239,68,68,0.18);
   }
 </style>
 
@@ -105,8 +87,29 @@
     {#if mensajeExito}
       <div class="exito">{mensajeExito}</div>
     {/if}
-    <IniciarTramiteView on:tramiteExito={() => mostrarExito('✅ Trámite creado con éxito')} />
-    <button class="btn" on:click={handleLogout}>Logout</button>
+
+    <div class="secciones-admin">
+      <div class="seccion">
+        <h2>Flujos de trámites creados</h2>
+        <div class="placeholder">(Aquí se mostrarán los flujos creados)</div>
+      </div>
+      <div class="seccion">
+        <h2>Flujos de trámite en desarrollo</h2>
+        <div class="placeholder">(Aquí se mostrarán los flujos en desarrollo)</div>
+      </div>
+      <div class="seccion">
+        <h2>Flujos de trámite en producción</h2>
+        <div class="placeholder">(Aquí se mostrarán los flujos en producción)</div>
+      </div>
+      <div class="seccion">
+        <h2>Usuarios</h2>
+        <div class="placeholder">(Aquí se mostrarán los usuarios)</div>
+      </div>
+    </div>
+
+    <button class="btn btn-logout" on:click={handleLogout}>
+      <span style="margin-right:8px;">🔒</span> Cerrar sesión
+    </button>
     {#if showLogoutConfirm}
       <div class="modal-bg">
         <div class="modal">
@@ -118,3 +121,4 @@
     {/if}
   {/if}
 </div>
+

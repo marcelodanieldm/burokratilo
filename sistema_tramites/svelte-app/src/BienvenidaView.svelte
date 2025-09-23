@@ -53,7 +53,7 @@
     <h1>Burokratilo</h1>
     <h2>Sistema de gestión de trámites</h2>
     <p>Por favor, inicia sesión o regístrate para continuar.</p>
-  <button class="btn" on:click={() => window.location.href = '/login.html'}>Iniciar sesión</button>
-  <button class="btn btn-secondary" on:click={() => window.location.href = '/register'}>Registrarse</button>
+  <button class="btn" on:click={() => window.location.hash = '#/login'}>Iniciar sesión</button>
+  <button class="btn btn-secondary" on:click={() => window.location.hash = '#/register'}>Registrarse</button>
   </div>
 </div>
