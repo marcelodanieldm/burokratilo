@@ -10,7 +10,8 @@ const usuarioSchema = new mongoose.Schema({
   },
   password: { type: String, required: true },
   nombre: { type: String, required: true },
-  apellido: { type: String, required: true }
+  apellido: { type: String, required: true },
+  rol: { type: String, required: true }
 });
 
 usuarioSchema.pre('save', async function(next) {

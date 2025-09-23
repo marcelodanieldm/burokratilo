@@ -17,8 +17,8 @@ describe('Login endpoint', () => {
   });
 
   it('debe rechazar contraseña incorrecta', async () => {
-    // Suponiendo que existe el usuario 'admin@email.com' con password 'adminpass'
-    const res = await request(app).post('/login').send({ username: 'admin@email.com', password: 'wrongpass' });
+    // Suponiendo que existe el usuario 'admin@burokratilo.com' con password '123456'
+    const res = await request(app).post('/login').send({ username: 'admin@burokratilo.com', password: 'wrongpass' });
     expect(res.statusCode).toBe(401);
     expect(res.body.error).toBe('Contraseña incorrecta');
   });
